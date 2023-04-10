@@ -15,8 +15,8 @@ class UsersView
     }
     public function render()
     {
-        $data = $this->controller->getData();
-        $this->controller->addUser();
+        // $data = $this->controller->getData();
+        $result = $this->controller->addUser();
         require($this->template);
     }
 }

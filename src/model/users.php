@@ -4,7 +4,7 @@ class UsersModel
 {
 
     public $db;
-    public $dataTest;
+    public $dataUser;
     public $name;
     public $email;
     public $emailConfirm;
@@ -15,6 +15,7 @@ class UsersModel
     public $seller;
     public $buyer;
     public $repairer;
+    public $phone;
 
 
     public function __construct(PDO $db)
@@ -22,19 +23,18 @@ class UsersModel
         $this->db = $db;
 
 
-        $this->dataTest = json_decode(file_get_contents("php://input"));
-        if (!empty($this->dataTest->name) && !empty($this->dataTest->email) && !empty($this->dataTest->password) && !empty($this->dataTest->emailConfirm) && !empty($this->dataTest->passwordConfirm) && !empty($this->dataTest->adress)) {
 
-            $this->name = trim(strip_tags($this->dataTest->name));
-            $this->email = trim(strip_tags($this->dataTest->email));
-            $this->emailConfirm = trim(strip_tags($this->dataTest->emailConfirm));
-            $this->adress = trim(strip_tags($this->dataTest->adress));
-            $this->adressDelivery = trim(strip_tags($this->dataTest->adressDelivery));
-            $this->password = trim(strip_tags($this->dataTest->password));
-            $this->passwordConfirm = trim(strip_tags($this->dataTest->passwordConfirm));
-            $this->dataTest->seller = $this->dataTest->seller;
-            $this->dataTest->buyer = trim(strip_tags($this->dataTest->buyer));
-            $this->dataTest->repairer = trim(strip_tags($this->dataTest->repairer));
+        $this->dataUser = json_decode(file_get_contents("php://input"));
+        if (!empty($this->dataUser)) {
+            $this->name = trim(strip_tags($this->dataUser->name));
+            $this->email = trim(strip_tags($this->dataUser->email));
+            $this->emailConfirm = trim(strip_tags($this->dataUser->emailConfirm));
+            $this->password = trim(strip_tags($this->dataUser->password));
+            $this->passwordConfirm = trim(strip_tags($this->dataUser->passwordConfirm));
+            $this->seller = trim(strip_tags($this->dataUser->seller));
+            $this->buyer = trim(strip_tags($this->dataUser->buyer));
+            $this->repairer = trim(strip_tags($this->dataUser->repairer));
+            $this->phone = trim(strip_tags($this->dataUser->phone));
         }
     }
 }
