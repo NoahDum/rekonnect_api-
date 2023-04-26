@@ -15,38 +15,51 @@ class PaymentController
     {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-            $msgUser = [];
+            if (function_exists('apache_request_headers')) {
+                $requestHeaders = apache_request_headers();
 
-            // Get value of user wallet
-            $query = $this->model->db->prepare("SELECT wallet FROM rekonnect.users where id like :user_id ");
-            $query->bindParam(':user_id', $this->model->user_id);
+                $requestHeaders = array_combine(array_map('ucwords', array_keys($requestHeaders)), array_values($requestHeaders));
+                if (empty($requestHeaders['Authorization'])) {
+                    http_response_code(401); // Non autorisé
+                    return ['error' => 'Token manquant'];
+                } else {
+                    $headers = trim($requestHeaders['Authorization']);
+                    $token = trim(str_replace('Bearer', '', $headers));
 
-            if ($query->execute()) {
-                $result = $query->fetch();
-            } else {
-                $msgUser['msgUser'] = "Porte-monnaie inexistant";
-                return array("msgUser" => $msgUser);
-            }
+                    $msgUser = [];
 
-            if ($result['wallet'] > $this->model->totalCmd) {
+                    // Get value of user wallet
+                    $query = $this->model->db->prepare("SELECT wallet FROM rekonnect.users where id like :user_id ");
+                    $query->bindParam(':user_id', $this->model->user_id);
 
-                // Update wallet user
-                $query = $this->model->db->prepare("UPDATE rekonnect.users SET wallet = wallet - :totalCmd where id like :user_id");
-                $query->bindParam(':user_id', $this->model->user_id);
-                $query->bindParam(':totalCmd', $this->model->totalCmd);
-
-                if ($query->execute() && !empty($this->model->objectIds)) {
-                    $ids = implode(",", $this->model->objectIds);
-
-                    $query = $this->model->db->prepare("DELETE FROM rekonnect.postsell WHERE id IN ($ids)");
                     if ($query->execute()) {
-                        $msgUser['msgUser'] = "Panier validé avec succès";
+                        $result = $query->fetch();
+                    } else {
+                        $msgUser['msgUser'] = "Porte-monnaie inexistant";
+                        return array("msgUser" => $msgUser);
+                    }
+
+                    if ($result['wallet'] > $this->model->totalCmd) {
+
+                        // Update wallet user
+                        $query = $this->model->db->prepare("UPDATE rekonnect.users SET wallet = wallet - :totalCmd where id like :user_id");
+                        $query->bindParam(':user_id', $this->model->user_id);
+                        $query->bindParam(':totalCmd', $this->model->totalCmd);
+
+                        if ($query->execute() && !empty($this->model->objectIds)) {
+                            $ids = implode(",", $this->model->objectIds);
+
+                            $query = $this->model->db->prepare("DELETE FROM rekonnect.postsell WHERE id IN ($ids)");
+                            if ($query->execute()) {
+                                $msgUser['msgUser'] = "Panier validé avec succès";
+                                return array("msgUser" => $msgUser);
+                            }
+                        }
+                    } else {
+                        $msgUser['msgUser'] = "Fonds insuffisants dans le porte-monnaie";
                         return array("msgUser" => $msgUser);
                     }
                 }
-            } else {
-                $msgUser['msgUser'] = "Fonds insuffisants dans le porte-monnaie";
-                return array("msgUser" => $msgUser);
             }
         }
     }
