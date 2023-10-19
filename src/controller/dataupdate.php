@@ -13,12 +13,11 @@ class dataUpdateController
     public function update()
     {
 
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        if ($_SERVER["REQUEST_METHOD"] == "PUT") {
             $errors = [];
             if (!filter_var($this->model->email)) {
                 $errors["email"] = "L'email n'est pas validé";
             }
-
 
 
 
@@ -49,36 +48,6 @@ class dataUpdateController
                 }
             }
         }
-
-
-
-
-
-
-        // var_dump($test);
-
-
-
-
-
-
-
-
-
-
-        //verification que le nom ou l'adresse mail n'éxiste pas dans la base de donnée
-        // $query = $this->model->db->prepare("SELECT rekonnect.users.name, rekonnect.users.email from rekonnect.users where name like :name");
-        // $query->bindParam('name', $this->model->email)
-
-
-
-
-
-
-
-
-
-
 
         if (!empty($errors)) {
             return $errors;

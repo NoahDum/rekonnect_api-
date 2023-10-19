@@ -32,6 +32,7 @@ class LoginController
                     $query->bindParam(':token', $token);
                     $query->bindParam(':id', $user['id']);
                     $query->execute();
+                    $user['token'] = $token; // Ajoutez le jeton aux données de l'utilisateur
                 }
                 return $user;
             } else {
