@@ -6,7 +6,7 @@ class dataUpdateController
     public $model;
 
 
-    public function __construct(DataUpdateModel $model)
+    public function __construct(dataUpdateModel $model)
     {
         $this->model = $model;
     }
